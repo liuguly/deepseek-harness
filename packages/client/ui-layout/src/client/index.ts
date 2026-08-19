@@ -1,7 +1,7 @@
 /**
  * Layout plugin, browser half: one register() call contributes AppFrame into
  * the runtime's built-in 'root' slot and, in the same breath, declares the
- * four child slots (declaration = exclusive render authority), seats the
+ * five child slots (declaration = exclusive render authority), seats the
  * layout store (panel geometry), and wires the panel-action service face.
  * ctx.layout is the cross-plugin panel-action contract; navigation state lives
  * with the runtime sessions service. A second effect seats the theme
@@ -61,6 +61,14 @@ declare module '@deepseek-ai/dsh-client-ui-slots' {
      */
     'conversation': { kind: 'single'; scope: 'session-maybe'; owner: ConvOwnerProps }
     /**
+     * The files panel column, the second column immediately right of the
+     * sidebar, shown when the layout opens it. OCCUPIED by
+     * ui-workspace-files' FilesViewer (the workspace file content viewer);
+     * registering here replaces the column. Absent an occupant the column
+     * renders nothing. Root-scoped: file viewing is not session-bound.
+     */
+    'files': { kind: 'single'; scope: 'root'; owner: FilesOwnerProps }
+    /**
      * The right details column, shown when the layout opens it. OCCUPIED by
      * ui-conversation's DetailsPanel, which declares the tool-details seat
      * inside it — registering here replaces the column and takes that seat
@@ -101,6 +109,9 @@ export interface SidebarOwnerProps {
 /** Conversation owner share: business state and actions belong to the registrant. */
 export interface ConvOwnerProps {}
 
+/** Files panel owner share: empty — the frame owns the column width. */
+export interface FilesOwnerProps {}
+
 /** Details owner share: empty — sessionId arrives as a framework-standard prop. */
 export interface DetailsOwnerProps {}
 
@@ -122,6 +133,7 @@ export function apply(ctx: ClientContext): void {
       children: {
         'sidebar': { kind: 'single', scope: 'root' },
         'conversation': { kind: 'single', scope: 'session-maybe' },
+        'files': { kind: 'single', scope: 'root' },
         'details': { kind: 'single', scope: 'session' },
         'shell.overlay': { kind: 'list', scope: 'root' },
       },

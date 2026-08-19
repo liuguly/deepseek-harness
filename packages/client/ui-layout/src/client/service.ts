@@ -27,6 +27,10 @@ export interface ILayout {
   openDetails(): void
   /** Close the details panel. */
   closeDetails(): void
+  /** Open the files panel (no-op when already open). */
+  openFiles(): void
+  /** Close the files panel. */
+  closeFiles(): void
 }
 
 /** Cross-plugin panel-action face (ctx.layout). */
@@ -57,6 +61,16 @@ export class LayoutController implements ILayout {
   /** Close the details panel. */
   closeDetails(): void {
     this.#require().closeDetails()
+  }
+
+  /** Open the files panel (no-op when already open). */
+  openFiles(): void {
+    this.#require().openFiles()
+  }
+
+  /** Close the files panel. */
+  closeFiles(): void {
+    this.#require().closeFiles()
   }
 
   #require(): PanelActions {

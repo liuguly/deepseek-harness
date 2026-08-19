@@ -2,7 +2,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { cleanup, fireEvent, render, screen } from '@testing-library/react'
 import type {
-  SidebarFooterActionOwnerProps, SidebarRootComponentProps, SidebarSectionOwnerProps,
+  SidebarFilesOwnerProps, SidebarFooterActionOwnerProps, SidebarRootComponentProps, SidebarSectionOwnerProps,
   SidebarSettingsOwnerProps,
 } from '../src/client/contract/slots.ts'
 import { SidebarRoot } from '../src/client/SidebarRoot.tsx'
@@ -25,6 +25,7 @@ function mountShell({ collapsed = false, width = 300 }: { collapsed?: boolean; w
   const startSession = vi.fn()
   const toggleSidebar = vi.fn()
   let regionOwner: SidebarSectionOwnerProps | undefined
+  let filesOwner: SidebarFilesOwnerProps | undefined
   let settingsOwner: SidebarSettingsOwnerProps | undefined
   let footerActionOwner: SidebarFooterActionOwnerProps | undefined
   let current = { collapsed, width }
@@ -33,20 +34,22 @@ function mountShell({ collapsed = false, width = 300 }: { collapsed?: boolean; w
       collapsed={current.collapsed} width={current.width}
       useSessions={neverHook} useWorkspaces={neverHook}
       startSession={startSession} toggleSidebar={toggleSidebar} t={t}
-      renderSlot={((
-        key: string,
-        owner: SidebarFooterActionOwnerProps | SidebarSectionOwnerProps | SidebarSettingsOwnerProps,
-      ) => {
+      renderSlot={((key: string, owner: unknown) => {
+        const wide = (owner as { wide?: boolean }).wide
         if (key === 'sidebar.settings') {
-          settingsOwner = owner
-          return <div data-testid="settings-seat" data-wide={owner.wide} />
+          settingsOwner = owner as SidebarSettingsOwnerProps
+          return <div data-testid="settings-seat" data-wide={wide} />
         }
         if (key === 'sidebar.footer.action') {
-          footerActionOwner = owner
-          return <div data-testid="footer-action-seat" data-wide={owner.wide} />
+          footerActionOwner = owner as SidebarFooterActionOwnerProps
+          return <div data-testid="footer-action-seat" data-wide={wide} />
+        }
+        if (key === 'sidebar.files') {
+          filesOwner = owner as SidebarFilesOwnerProps
+          return <div data-testid="files-seat" data-wide={wide} />
         }
         regionOwner = owner as SidebarSectionOwnerProps
-        return <div data-testid="region" data-wide={owner.wide} />
+        return <div data-testid="region" data-wide={wide} />
       }) as SidebarRootComponentProps['renderSlot']}
     />
   )
@@ -57,6 +60,10 @@ function mountShell({ collapsed = false, width = 300 }: { collapsed?: boolean; w
     regionOwner: () => {
       if (regionOwner === undefined) throw new Error('region owner not rendered')
       return regionOwner
+    },
+    filesOwner: () => {
+      if (filesOwner === undefined) throw new Error('files owner not rendered')
+      return filesOwner
     },
     settingsOwner: () => {
       if (settingsOwner === undefined) throw new Error('settings owner not rendered')
@@ -85,9 +92,10 @@ describe('SidebarRoot shell', () => {
     expect(b.toggleSidebar).toHaveBeenCalledOnce()
   })
 
-  it('hands the region its wide flag and clamps expandSidebar to the collapsed state', () => {
+  it('hands the region and files seat their wide flag and clamps expandSidebar to the collapsed state', () => {
     const b = mountShell()
     expect(b.regionOwner().wide).toBe(true)
+    expect(b.filesOwner().wide).toBe(true)
     // The settings seat rides the same wide flag (ui-settings renders the row).
     expect(b.settingsOwner().wide).toBe(true)
     expect(b.footerActionOwner().wide).toBe(true)
@@ -105,6 +113,7 @@ describe('SidebarRoot shell', () => {
     vi.advanceTimersByTime(200)
     b.rerender({})
     expect(b.regionOwner().wide).toBe(false)
+    expect(b.filesOwner().wide).toBe(false)
     expect(b.footerActionOwner().wide).toBe(false)
     expect(screen.getByTestId('region')).toBeTruthy()
     b.regionOwner().expandSidebar()

@@ -1,0 +1,150 @@
+/* Workspace files tree region (fills the sidebar shell's `sidebar.files`
+   hole): section header (title + hidden toggle), the workspace root picker,
+   and the scrolling file tree. The file content viewer lives in the layout's
+   `files` column (FilesViewer). */
+
+.root {
+  --dsh-explorer-inline-padding: var(--dsh-sidebar-inline-padding);
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  height: 46%;
+  min-height: 120px;
+  padding: 8px var(--dsh-explorer-inline-padding) 4px;
+  border-top: 1px solid var(--dsw-alias-border-l2);
+  gap: 6px;
+  overflow: hidden;
+}
+
+.header {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  color: var(--dsw-alias-label-tertiary);
+}
+
+.title {
+  font: var(--dsw-font-xs-strong-13);
+  letter-spacing: 0.02em;
+}
+
+.hiddenToggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font: var(--dsw-font-xxs-12);
+  color: var(--dsw-alias-label-secondary);
+  cursor: pointer;
+  user-select: none;
+}
+
+.hiddenToggle input {
+  accent-color: var(--dsw-alias-label-secondary);
+}
+
+.rootPicker {
+  flex: none;
+  display: flex;
+  align-items: center;
+}
+
+.pickerLabel {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font: var(--dsw-font-xxs-12);
+  color: var(--dsw-alias-label-tertiary);
+}
+
+.picker {
+  flex: 1;
+  min-width: 0;
+  font: var(--dsw-font-xxs-12);
+  color: var(--dsw-alias-label-primary);
+  background: var(--dsw-alias-bg-layer-1);
+  border: 1px solid var(--dsw-alias-border-l2);
+  border-radius: 6px;
+  padding: 2px 4px;
+}
+
+.pickerEmpty {
+  font: var(--dsw-font-xxs-12);
+  color: var(--dsw-alias-label-dimmed);
+}
+
+.tree {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  font: var(--dsw-font-xxs-12);
+}
+
+.children {
+  display: flex;
+  flex-direction: column;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  width: 100%;
+  border: none;
+  border-radius: 6px;
+  padding-top: 2px;
+  padding-bottom: 2px;
+  padding-right: 6px;
+  background: transparent;
+  color: var(--dsw-alias-label-primary);
+  font: var(--dsw-font-xxs-12);
+  text-align: left;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.row:hover {
+  background: var(--dsw-alias-interactive-bg-hover);
+}
+
+.rowActive,
+.rowSelected {
+  background: var(--dsw-alias-interactive-bg-active);
+}
+
+.chevron {
+  flex: none;
+  color: var(--dsw-alias-label-tertiary);
+  transition: transform var(--ds-duration-fast, 120ms) ease;
+}
+
+.chevronOpen {
+  transform: rotate(90deg);
+}
+
+.folderIcon {
+  flex: none;
+  color: var(--dsw-alias-label-tertiary);
+}
+
+.fileIcon {
+  flex: none;
+  color: var(--dsw-alias-label-tertiary);
+}
+
+.rowName {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.levelNotice {
+  padding: 2px 8px;
+  color: var(--dsw-alias-label-dimmed);
+  font: var(--dsw-font-xxs-12);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+

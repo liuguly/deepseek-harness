@@ -36,21 +36,33 @@
   overflow: hidden;
 }
 
+.filesCol {
+  min-width: 0;
+  overflow: hidden;
+  border-right: 1px solid var(--dsw-alias-border-l2);
+}
+
 .detailsCol {
   min-width: 0;
   overflow: hidden;
   border-left: 1px solid var(--dsw-alias-border-l2);
 }
 
-/* The details subtree stays mounted at zero width, so its border must not paint
-   a 1px seam. The collapsed sidebar instead retains a bordered compact rail. */
+/* The files/details subtrees stay mounted at zero width, so their borders
+   must not paint a 1px seam. The collapsed sidebar instead retains a
+   bordered compact rail. */
+.frame[data-files-collapsed] .filesCol {
+  border-right: none;
+}
+
 .frame[data-details-collapsed] .detailsCol {
   border-left: none;
 }
 
 /* Drag handles are frame children (columns clip overflow): an 8px hit strip
-   centered on the column border via inline left, above column content. Details
-   adds a visible 12x32 pill at vertical center; sidebar keeps only the hit strip. */
+   centered on the column border via inline left, above column content. Files
+   and details add a visible 12x32 pill at vertical center; sidebar keeps
+   only the hit strip. */
 .handle {
   position: absolute;
   top: 0;
@@ -75,7 +87,8 @@
   }
 }
 
-.handle[data-side='details']::after {
+.handle[data-side='details']::after,
+.handle[data-side='files']::after {
   content: '';
   position: absolute;
   top: 50%;
@@ -87,7 +100,7 @@
   box-sizing: border-box;
   background: var(--dsw-alias-button-floating-fill);
   border: 1px solid var(--dsw-alias-border-l2-darkmode-thin);
-  /* Hover affordance: the details pill hides until the pointer is over its
+  /* Hover affordance: the pill hides until the pointer is over its
      column, the strip itself, or a drag. */
   opacity: 0;
   transition:
@@ -96,13 +109,18 @@
 }
 
 .detailsCol:hover ~ .handle[data-side='details']::after,
+.filesCol:hover ~ .handle[data-side='files']::after,
 .handle[data-side='details']:hover::after,
-.handle[data-side='details'][data-dragging='true']::after {
+.handle[data-side='files']:hover::after,
+.handle[data-side='details'][data-dragging='true']::after,
+.handle[data-side='files'][data-dragging='true']::after {
   opacity: 1;
 }
 
 .handle[data-side='details']:hover::after,
-.handle[data-side='details'][data-dragging='true']::after {
+.handle[data-side='files']:hover::after,
+.handle[data-side='details'][data-dragging='true']::after,
+.handle[data-side='files'][data-dragging='true']::after {
   background: var(--dsw-alias-button-floating-hover);
   border-color: var(--dsw-alias-border-l3);
 }
