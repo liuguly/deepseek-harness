@@ -356,14 +356,24 @@ function lockOwnershipChangedError(lockPath) {
   return new Error(`Lefthook installer lock ownership changed for ${lockPath}; refusing to remove it`)
 }
 
+/**
+ * Whether two stat records name the same lock file. `ino` is the file index
+ * and always comparable; `dev` distinguishes volumes, but Node's path-based
+ * stat reports `dev` as 0 on Windows while a handle-based fstat reports the
+ * volume serial for the same file, so a zero dev on either side disables the
+ * dev comparison rather than failing the identity check.
+ */
+function sameLockFile(left, right) {
+  return left.ino === right.ino && (left.dev === right.dev || left.dev === 0 || right.dev === 0)
+}
+
 function releaseInstallLock(lockPath, ownedRecord, ownedStat) {
   const currentStat = installLockStat(lockPath)
   if (
     currentStat === undefined
     || !currentStat.isFile()
     || currentStat.isSymbolicLink()
-    || currentStat.dev !== ownedStat.dev
-    || currentStat.ino !== ownedStat.ino
+    || !sameLockFile(currentStat, ownedStat)
     || readInstallLock(lockPath) !== ownedRecord
   ) {
     throw lockOwnershipChangedError(lockPath)
@@ -402,8 +412,7 @@ async function acquireInstallLock(commonDirectory) {
         publishedStat === undefined
         || !publishedStat.isFile()
         || publishedStat.isSymbolicLink()
-        || publishedStat.dev !== ownedStat.dev
-        || publishedStat.ino !== ownedStat.ino
+        || !sameLockFile(publishedStat, ownedStat)
       ) {
         throw lockOwnershipChangedError(lockPath)
       }
@@ -422,7 +431,7 @@ async function acquireInstallLock(commonDirectory) {
       if (!verifiedStat.isFile() || verifiedStat.isSymbolicLink()) {
         throw manualLockRecoveryError(lockPath, 'invalid')
       }
-      if (verifiedStat.dev !== existingStat.dev || verifiedStat.ino !== existingStat.ino) continue
+      if (!sameLockFile(verifiedStat, existingStat)) continue
       const owner = parseInstallLock(existingRecord)
       if (owner === undefined) {
         if (!installLockRecordMayBeIncomplete(existingRecord)) {
@@ -431,8 +440,7 @@ async function acquireInstallLock(commonDirectory) {
         const now = Date.now()
         if (
           initializingLock === undefined
-          || initializingLock.dev !== existingStat.dev
-          || initializingLock.ino !== existingStat.ino
+          || !sameLockFile(initializingLock, existingStat)
         ) {
           initializingLock = {
             deadline: now + INSTALL_LOCK_INITIALIZATION_TIMEOUT_MS,
