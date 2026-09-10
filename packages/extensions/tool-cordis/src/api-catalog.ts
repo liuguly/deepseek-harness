@@ -1188,6 +1188,215 @@ export const SERVICE_API: readonly ServiceApiEntry[] = [
     ],
   },
   {
+    key: 'knowledge',
+    summary: 'Orchestration over the store and embedding seams.',
+    description: 'Orchestration over the store and embedding seams. Every public method first awaits `ready()`, which bootstraps the store, recovers interrupted documents, and fails loudly on a dimension mismatch between the configured providers.',
+    methods: [
+      {
+        signature: 'ready(): Promise<void>',
+        description: 'Resolve once the store is bootstrapped, interrupted documents are recovered, and the two seam dimensions agree.',
+        parameters: [],
+        returns: 'resolution when the capability is usable.',
+      },
+      {
+        signature: 'async submitDocument(input: SubmitDocumentInput): Promise<KnowledgeDocument>',
+        description: 'Register and enqueue one document. A repeated upload resolves to the existing record without re-running the pipeline.',
+        parameters: [{ name: 'input', description: 'the mode, names, content hash, and bytes of the upload.' }],
+        returns: 'the stored document.',
+      },
+      {
+        signature: 'async reingestDocument(id: string, data: Uint8Array, signal?: AbortSignal): Promise<KnowledgeDocument>',
+        description: 'Re-run one document\'s pipeline: artifacts are cleared first.',
+        parameters: [{ name: 'id', description: 'the document id.' }, { name: 'data', description: 'the document bytes, supplied again by the client.' }, { name: 'signal', description: 'cancellation for the queued pipeline.' }],
+        returns: 'the document restaged for ingest.',
+        throws: ['when the document does not exist.'],
+      },
+      {
+        signature: 'async search(input: KnowledgeSearchInput): Promise<KnowledgeSearchResult[]>',
+        description: 'Embed the query and run the nearest-neighbour search across the store.',
+        parameters: [{ name: 'input', description: 'query text with optional structured filters.' }],
+        returns: 'results ordered by descending similarity.',
+      },
+      {
+        signature: 'async listDocuments(filter?: DocumentListFilter): Promise<KnowledgeDocument[]>',
+        description: 'List documents newest first, optionally filtered by mode.',
+        parameters: [{ name: 'filter', description: 'optional mode filter.' }],
+        returns: 'the stored documents newest first.',
+      },
+      {
+        signature: 'async getDocument(id: string): Promise<KnowledgeDocument | undefined>',
+        description: 'Read one document.',
+        parameters: [{ name: 'id', description: 'the document id.' }],
+        returns: 'the document, or `undefined` when absent.',
+      },
+      {
+        signature: 'async artifactCounts(documentId: string): Promise<ArtifactCounts>',
+        description: 'Chunk and per-kind artifact counts of one document.',
+        parameters: [{ name: 'documentId', description: 'the document id.' }],
+        returns: 'the chunk count and per-kind artifact counts.',
+      },
+      {
+        signature: 'async deleteDocument(id: string): Promise<void>',
+        description: 'Delete one document and its artifacts.',
+        parameters: [{ name: 'id', description: 'the document id.' }],
+        returns: 'resolution once the deletion has landed.',
+      },
+      {
+        signature: 'async getTemplateArtifact(artifactId: string): Promise<TemplateArtifactRecord | undefined>',
+        description: 'Read one template artifact.',
+        parameters: [{ name: 'artifactId', description: 'the artifact id.' }],
+        returns: 'the artifact, or `undefined` when absent.',
+      },
+      {
+        signature: 'async listChildArtifacts(parentId: string): Promise<TemplateArtifactRecord[]>',
+        description: 'List artifacts derived from one parent (its variants), oldest first.',
+        parameters: [{ name: 'parentId', description: 'the parent artifact id.' }],
+        returns: 'the child artifacts oldest first.',
+      },
+      {
+        signature: 'async listDocumentArtifacts(documentId: string): Promise<TemplateArtifactRecord[]>',
+        description: 'List every template artifact of one document, oldest first.',
+        parameters: [{ name: 'documentId', description: 'the owning document id.' }],
+        returns: 'the document\'s artifacts oldest first.',
+      },
+      {
+        signature: 'async generateVariants( artifactId: string, request: { readonly count?: number; readonly difficulty?: Difficulty }, ): Promise<string[]>',
+        description: 'Generate and archive variants from one question template.',
+        parameters: [{ name: 'artifactId', description: 'the question_template artifact id.' }, { name: 'request', description: 'optional count (defaults and caps from config) and target difficulty.' }],
+        returns: 'the created variant artifact ids. the created variant artifact ids.',
+      },
+    ],
+  },
+  {
+    key: 'knowledgeEmbedding',
+    summary: 'Embedding seam; inputs and outputs are aligned by index.',
+    description: 'Embedding seam; inputs and outputs are aligned by index.',
+    methods: [
+      {
+        signature: 'readonly dimensions: number',
+        description: 'Vector dimension of every produced embedding.',
+        parameters: [],
+      },
+      {
+        signature: 'embed(texts: readonly string[], signal?: AbortSignal): Promise<number[][]>',
+        description: 'Embed one or more texts in submission order.',
+        parameters: [{ name: 'texts', description: 'the texts to embed, batched internally by the provider.' }, { name: 'signal', description: 'caller cancellation for the whole request set.' }],
+        returns: 'one vector per input, aligned by index.',
+        throws: ['when the endpoint fails or returns a misaligned response.'],
+      },
+    ],
+  },
+  {
+    key: 'knowledgeStore',
+    summary: 'Durable storage seam for documents, chunks, and template artifacts.',
+    description: 'Durable storage seam for documents, chunks, and template artifacts.',
+    methods: [
+      {
+        signature: 'readonly dimensions: number',
+        description: 'Vector dimension the store\'s columns and indexes are built for.',
+        parameters: [],
+      },
+      {
+        signature: 'ensure(): Promise<void>',
+        description: 'Idempotently bootstrap the database, extension, schema, tables, and indexes. Concurrency-safe; failures name the exact remediation.',
+        parameters: [],
+      },
+      {
+        signature: 'registerDocument(input: KnowledgeDocumentInput): Promise<KnowledgeDocument>',
+        description: 'Register one document. Re-registering an identical `sha256` resolves to the existing record without changing its status.',
+        parameters: [{ name: 'input', description: 'the mode, names, MIME type, and content hash.' }],
+        returns: 'the stored document (existing record on hash conflict).',
+      },
+      {
+        signature: 'setDocumentStatus(id: string, status: DocumentStatus, error?: string): Promise<void>',
+        description: 'Transition one document\'s status, replacing any prior error.',
+        parameters: [{ name: 'id', description: 'the document id.' }, { name: 'status', description: 'the next lifecycle state.' }, { name: 'error', description: 'the failure reason when transitioning to `failed`.' }],
+        throws: ['when the document does not exist.'],
+      },
+      {
+        signature: 'setChunkCount(id: string, chunkCount: number): Promise<void>',
+        description: 'Replace the stored chunk count of one document.',
+        parameters: [{ name: 'id', description: 'the document id.' }, { name: 'chunkCount', description: 'the number of stored chunks.' }],
+      },
+      {
+        signature: 'insertChunks(documentId: string, chunks: readonly KnowledgeChunkInput[]): Promise<void>',
+        description: 'Persist chunks for one document in one transaction.',
+        parameters: [{ name: 'documentId', description: 'the owning document id.' }, { name: 'chunks', description: 'the ordered chunk drafts with embeddings.' }],
+        throws: ['on any row failure; the transaction rolls back.'],
+      },
+      {
+        signature: 'insertTemplateArtifact(documentId: string, artifact: TemplateArtifactInput): Promise<string>',
+        description: 'Persist one template artifact.',
+        parameters: [{ name: 'documentId', description: 'the owning document id.' }, { name: 'artifact', description: 'the validated artifact with its embedding.' }],
+        returns: 'the artifact id assigned by the store.',
+      },
+      {
+        signature: 'getTemplateArtifact(artifactId: string): Promise<TemplateArtifactRecord | undefined>',
+        description: 'Read one template artifact.',
+        parameters: [{ name: 'artifactId', description: 'the artifact id.' }],
+        returns: 'the artifact, or `undefined` when absent.',
+      },
+      {
+        signature: 'listChildArtifacts(parentId: string): Promise<TemplateArtifactRecord[]>',
+        description: 'List artifacts derived from one parent (its variants), oldest first.',
+        parameters: [{ name: 'parentId', description: 'the parent artifact id.' }],
+        returns: 'the child artifacts oldest first.',
+      },
+      {
+        signature: 'listDocumentArtifacts(documentId: string): Promise<TemplateArtifactRecord[]>',
+        description: 'List every template artifact of one document, oldest first.',
+        parameters: [{ name: 'documentId', description: 'the owning document id.' }],
+        returns: 'the document\'s artifacts oldest first.',
+      },
+      {
+        signature: 'clearDocumentArtifacts(documentId: string): Promise<void>',
+        description: 'Delete every chunk and template artifact of one document.',
+        parameters: [{ name: 'documentId', description: 'the document id.' }],
+      },
+      {
+        signature: 'deleteDocument(id: string): Promise<void>',
+        description: 'Delete one document and, by cascade, its artifacts.',
+        parameters: [{ name: 'id', description: 'the document id.' }],
+      },
+      {
+        signature: 'listDocuments(filter?: DocumentListFilter): Promise<KnowledgeDocument[]>',
+        description: 'List documents newest first, optionally filtered by mode.',
+        parameters: [{ name: 'filter', description: 'optional mode filter.' }],
+        returns: 'the stored documents newest first.',
+      },
+      {
+        signature: 'getDocument(id: string): Promise<KnowledgeDocument | undefined>',
+        description: 'Read one document.',
+        parameters: [{ name: 'id', description: 'the document id.' }],
+        returns: 'the document, or `undefined` when absent.',
+      },
+      {
+        signature: 'artifactCounts(documentId: string): Promise<ArtifactCounts>',
+        description: 'Chunk and per-kind artifact counts of one document.',
+        parameters: [{ name: 'documentId', description: 'the document id.' }],
+        returns: 'the chunk count and per-kind artifact counts.',
+      },
+      {
+        signature: 'failTransientDocuments(reason: string): Promise<number>',
+        description: 'Mark every document stuck in a transient state as failed. Used at boot to recover from process loss.',
+        parameters: [{ name: 'reason', description: 'the failure reason recorded on every transitioned document.' }],
+        returns: 'the number of documents transitioned.',
+      },
+      {
+        signature: 'search(request: KnowledgeSearchRequest): Promise<KnowledgeSearchResult[]>',
+        description: 'Nearest-neighbour search across chunks and template artifacts.',
+        parameters: [{ name: 'request', description: 'the query embedding, structured filters, and `topK`.' }],
+        returns: 'results ordered by descending similarity.',
+      },
+      {
+        signature: 'close(): Promise<void>',
+        description: 'Release the pool.',
+        parameters: [],
+        returns: 'resolution after the connections are closed; idempotent.',
+      },
+    ],
+  },
+  {
     key: 'llm',
     summary: 'The abstract `llm` service: an adapter registry plus a streaming model-call API, interceptable via the `llm/stream` waterfall.',
     description: 'The abstract `llm` service: an adapter registry plus a streaming model-call API, interceptable via the `llm/stream` waterfall.',
@@ -3570,6 +3779,10 @@ export const TYPE_API: readonly TypeApiEntry[] = [
     declaration: 'export interface ApprovalRequestEvent {\n    readonly agent: Agent;\n    readonly toolName: string;\n    readonly callId?: ToolCallId;\n    readonly reason?: string;\n    readonly signal?: AbortSignal;\n}',
   },
   {
+    name: 'ArtifactCounts',
+    declaration: 'export interface ArtifactCounts {\n    readonly chunkCount: number;\n    readonly byKind: Readonly<Record<TemplateArtifactKind, number>>;\n}',
+  },
+  {
     name: 'AskUserQuestionAnswer',
     declaration: 'export interface AskUserQuestionAnswer {\n    answers: AskUserQuestionAnswerItem[];\n}',
   },
@@ -4014,6 +4227,14 @@ export const TYPE_API: readonly TypeApiEntry[] = [
     declaration: 'export interface DirectoryRegistrationHandle {\n    (): void;\n    replace(entries: readonly LlmConfigurableProvider[]): void;\n}',
   },
   {
+    name: 'DocumentListFilter',
+    declaration: 'export interface DocumentListFilter {\n    readonly mode?: KnowledgeMode;\n}',
+  },
+  {
+    name: 'DocumentStatus',
+    declaration: 'export type DocumentStatus = \'staged\' | \'parsing\' | \'chunking\' | \'embedding\' | \'generating\' | \'ready\' | \'failed\';',
+  },
+  {
     name: 'Domain',
     declaration: 'export interface Domain<S extends DomainSpec> {\n    readonly name: string;\n    readonly global: DomainGlobalHandleOf<S>;\n    table<N extends keyof S[\'tables\'] & string>(name: N): KvTable<TableKeyOf<S, N>, TableValueOf<S, N>>;\n    close(): Promise<void>;\n}',
   },
@@ -4372,6 +4593,26 @@ export const TYPE_API: readonly TypeApiEntry[] = [
   {
     name: 'KnobState',
     declaration: 'export interface KnobState {\n    preset: string | null;\n    sandbox: SandboxMode | null;\n    approval: ApprovalPolicy | null;\n}',
+  },
+  {
+    name: 'KnowledgeChunkInput',
+    declaration: 'export interface KnowledgeChunkInput {\n    readonly seq: number;\n    readonly content: string;\n    readonly tokens: readonly string[];\n    readonly embedding: readonly number[];\n}',
+  },
+  {
+    name: 'KnowledgeDocumentInput',
+    declaration: 'export interface KnowledgeDocumentInput {\n    readonly mode: KnowledgeMode;\n    readonly title: string;\n    readonly sourceName: string;\n    readonly mime: string;\n    readonly sha256: string;\n}',
+  },
+  {
+    name: 'KnowledgeSearchInput',
+    declaration: 'export interface KnowledgeSearchInput {\n    readonly query: string;\n    readonly kind?: KnowledgeSearchResult[\'kind\'];\n    readonly mode?: KnowledgeDocument[\'mode\'];\n    readonly difficulty?: Difficulty;\n    readonly documentId?: string;\n    readonly topK?: number;\n}',
+  },
+  {
+    name: 'KnowledgeSearchRequest',
+    declaration: 'export interface KnowledgeSearchRequest {\n    readonly queryEmbedding: readonly number[];\n    readonly kind?: SearchKind;\n    readonly mode?: KnowledgeMode;\n    readonly difficulty?: Difficulty;\n    readonly documentId?: string;\n    readonly topK: number;\n}',
+  },
+  {
+    name: 'KnowledgeSearchResult',
+    declaration: 'export interface KnowledgeSearchResult {\n    readonly kind: SearchKind;\n    readonly score: number;\n    readonly documentId: string;\n    readonly documentTitle: string;\n    readonly mode: KnowledgeMode;\n    readonly seq?: number;\n    readonly artifactId?: string;\n    readonly parentId?: string;\n    readonly title?: string;\n    readonly content?: string;\n    readonly payload?: unknown;\n    readonly difficulty?: Difficulty;\n    readonly metadata?: TemplateMetadata;\n}',
   },
   {
     name: 'KvFacet',
@@ -5666,6 +5907,10 @@ export const TYPE_API: readonly TypeApiEntry[] = [
     declaration: 'export interface SubagentStopReasonMap {\n    completed: \'completed\';\n    aborted: \'aborted\';\n    error: \'error\';\n    \'max-tokens\': \'max-tokens\';\n    refusal: \'refusal\';\n}',
   },
   {
+    name: 'SubmitDocumentInput',
+    declaration: 'export interface SubmitDocumentInput {\n    readonly mode: KnowledgeDocument[\'mode\'];\n    readonly sourceName: string;\n    readonly mime: string;\n    readonly sha256: string;\n    readonly data: Uint8Array;\n    readonly title?: string;\n    readonly signal?: AbortSignal;\n}',
+  },
+  {
     name: 'SubprocessCollect',
     declaration: 'export interface SubprocessCollect {\n    maxBytes: number;\n    spill?: {\n        maxBytes: number;\n    };\n}',
   },
@@ -5792,6 +6037,18 @@ export const TYPE_API: readonly TypeApiEntry[] = [
   {
     name: 'TeamWaitResult',
     declaration: 'export interface TeamWaitResult {\n    readonly timedOut: boolean;\n}',
+  },
+  {
+    name: 'TemplateArtifactInput',
+    declaration: 'export interface TemplateArtifactInput {\n    readonly kind: TemplateArtifactKind;\n    readonly parentId?: string;\n    readonly title?: string;\n    readonly payload: unknown;\n    readonly difficulty?: Difficulty;\n    readonly metadata?: TemplateMetadata;\n    readonly embedding: readonly number[];\n}',
+  },
+  {
+    name: 'TemplateArtifactKind',
+    declaration: 'export type TemplateArtifactKind = \'document_template\' | \'question\' | \'question_template\' | \'variant\';',
+  },
+  {
+    name: 'TemplateArtifactRecord',
+    declaration: 'export interface TemplateArtifactRecord {\n    readonly artifactId: string;\n    readonly documentId: string;\n    readonly kind: TemplateArtifactKind;\n    readonly parentId?: string;\n    readonly title?: string;\n    readonly payload: unknown;\n    readonly difficulty?: Difficulty;\n    readonly metadata?: TemplateMetadata;\n}',
   },
   {
     name: 'TerminalBackend',

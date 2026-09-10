@@ -178,9 +178,7 @@ export const CLIENT_SLOT_API: readonly ClientSlotEntry[] = [
     ownerProps: [
       '/** Owner currency of finalized-assistant actions. */\nexport interface AssistantActionOwnerProps {\n  messageId: MessageId\n}',
     ],
-    ownerPropsReferences: [
-      'MessageId',
-    ],
+    ownerPropsReferences: [],
     standardProps: [
       'useWorkspaces: SnapshotSelectorHook<WorkspaceSnapshot>',
       'useSessions: UseSessions',
@@ -985,7 +983,6 @@ export const CLIENT_SLOT_API: readonly ClientSlotEntry[] = [
       '/** Message image group handed to the optional attachment presentation plugin. */\nexport interface MessageImagesOwnerProps {\n  /** Durable references or submission-echo previews in source order. */\n  images: readonly MessageImageSource[]\n  /** Session-authorized image URL loader for the durable arm. */\n  loadImage: MessageImageLoader\n  /** Horizontal placement inside the owning record. */\n  align: \'start\' | \'end\'\n  /** Force every image into the compact message-attachment tile size. */\n  compact?: boolean\n}',
     ],
     ownerPropsReferences: [
-      'Message',
       'MessageImageLoader',
       'MessageImageSource',
     ],
@@ -1244,7 +1241,6 @@ export const CLIENT_SLOT_API: readonly ClientSlotEntry[] = [
       '/** Message image group handed to the optional attachment presentation plugin. */\nexport interface MessageImagesOwnerProps {\n  /** Durable references or submission-echo previews in source order. */\n  images: readonly MessageImageSource[]\n  /** Session-authorized image URL loader for the durable arm. */\n  loadImage: MessageImageLoader\n  /** Horizontal placement inside the owning record. */\n  align: \'start\' | \'end\'\n  /** Force every image into the compact message-attachment tile size. */\n  compact?: boolean\n}',
     ],
     ownerPropsReferences: [
-      'Message',
       'MessageImageLoader',
       'MessageImageSource',
     ],
@@ -1809,6 +1805,7 @@ export const CLIENT_SLOT_API: readonly ClientSlotEntry[] = [
       'client-ui-settings-general GeneralSection id \'general\'',
       'client-ui-settings-models ModelsSection id \'models\'',
       'client-ui-settings-plugins PluginsSettingsSection id \'plugins\'',
+      'client-ui-workbench WorkbenchSection id \'knowledge\'',
     ],
     replaceRisk: 'none',
     example: 'return {\n  inject: [\'slots\'],\n  apply(ctx) {\n    ctx.slots.inject(\'settings.section\', () => ctx.slots.register(\n      { name: \'settings.section\', id: \'my-entry\', order: 100, label: \'My entry\' },\n      () => React.createElement(\'div\', null, \'hello\'),\n    ))\n  },\n}',

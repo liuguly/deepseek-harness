@@ -67,6 +67,40 @@
     - id: file-reference-local
       name: '@deepseek-ai/dsh-file-reference-local'
 
+    # Personal knowledge workbench: connection facts come from the PGSQL_*
+    # environment variables; the password is never written to this file. The
+    # embedding route serves any OpenAI-compatible endpoint — the probe
+    # verified SiliconFlow bge-m3 (1024 dims); the ARK credential does not
+    # serve /api/v3 embeddings. `template.llm` names the model route every
+    # template-pipeline call takes; adjust to the deployment's enabled model.
+    - id: workbench-knowledge-pgvector
+      name: '@deepseek-ai/dsh-workbench-knowledge-pgvector'
+      config:
+        host: !!js process.env.PGSQL_HOST
+        port: !!js Number(process.env.PGSQL_PORT)
+        user: !!js process.env.PGSQL_USER
+        password: !!js process.env.PGSQL_PASSWORD
+        database: 'dsh_workbench'
+        dimensions: 1024
+
+    - id: workbench-knowledge-embedding-openai
+      name: '@deepseek-ai/dsh-workbench-knowledge-embedding-openai'
+      config:
+        baseUrl: 'https://api.siliconflow.cn/v1'
+        model: 'BAAI/bge-m3'
+        dimensions: 1024
+        credentialRef: 'env:SILICONFLOW_API_KEY'
+
+    - id: workbench-knowledge
+      name: '@deepseek-ai/dsh-workbench-knowledge'
+      config:
+        store: { backend: 'pgvector' }
+        embedding: { provider: 'openai-compatible' }
+        template:
+          llm:
+            provider: 'deepseek-official'
+            model: 'deepseek-chat'
+
     # Whole-log turn/step counts for the chat stats strip (the sessionStats
     # projection key); the projection registry itself is a base-layer row.
     - id: session-stats
@@ -309,6 +343,11 @@
 
     - id: ui-trajectory
       name: '@deepseek-ai/dsh-client-ui-trajectory'
+
+    # Personal knowledge workbench: upload / document library / search inside
+    # the settings surface.
+    - id: ui-workbench
+      name: '@deepseek-ai/dsh-client-ui-workbench'
 
 # ── the agent plane moves behind agent presets ─────────────────────────────
 #

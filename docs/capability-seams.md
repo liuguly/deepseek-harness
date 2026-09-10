@@ -21,6 +21,12 @@ flowchart LR
   pkg_llm_replay["llm-replay"]
   pkg_agent_loop["agent-loop"]
   pkg_compaction_basic["compaction-basic"]
+  pkg_knowledge["knowledge"]
+  svc_knowledge["ctx.knowledge<br/>Personal knowledge workbench orchestration"]
+  pkg_knowledge_pgvector["knowledge-pgvector"]
+  svc_knowledgeStore["ctx.knowledgeStore<br/>pgvector knowledge store"]
+  pkg_knowledge_embedding_openai["knowledge-embedding-openai"]
+  svc_knowledgeEmbedding["ctx.knowledgeEmbedding<br/>OpenAI-compatible embeddings"]
   pkg_deepseek_llm_api_extensions["deepseek-llm-api-extensions"]
   svc_deepseekLlmApiExtensions["ctx.deepseekLlmApiExtensions<br/>Official DeepSeek request extensions"]
   pkg_session_log_deepseek["session-log-deepseek"]
@@ -268,6 +274,9 @@ flowchart LR
   pkg_invariants --> svc_invariants
   pkg_jobs --> svc_jobs
   pkg_jobs_local --> svc_jobs
+  pkg_knowledge --> svc_knowledge
+  pkg_knowledge_embedding_openai --> svc_knowledgeEmbedding
+  pkg_knowledge_pgvector --> svc_knowledgeStore
   pkg_llm --> svc_llm
   pkg_llm_deepseek --> svc_llm
   pkg_llm_pi_ai --> svc_llm
@@ -377,6 +386,8 @@ flowchart LR
   svc_jobs --> pkg_tool_jobs
   svc_jobs --> pkg_tool_subagent
   svc_jobs --> pkg_tool_terminal
+  svc_knowledgeEmbedding --> pkg_knowledge
+  svc_knowledgeStore --> pkg_knowledge
   svc_llm --> pkg_agent_loop
   svc_llm --> pkg_compaction_basic
   svc_lsp --> pkg_tool_lsp
@@ -472,6 +483,9 @@ flowchart LR
 | `ctx.attachments` | `seam` | [`attachment`](../packages/attachment/attachment) | [`attachment-local`](../packages/attachment/attachment-local) | [`api-session-controller`](../packages/api/session-controller), [`tool-fs`](../packages/fs/tool-fs), [`llm-pi-ai`](../packages/llm/llm-pi-ai), [`llm-deepseek`](../packages/llm/llm-deepseek) | - | The host commits accepted images before session events; provider adapters resolve authorized durable references into provider-native content. |
 | `ctx.fileUploads` | `core` | [`client-file-upload`](../packages/client/file-upload) | - | [`api-session-controller`](../packages/api/session-controller) | - | Owns streaming intake, durable storage, and staged receipt lifetime; the Session controller binds receipts to accepted submissions. |
 | `ctx.llm` | `seam` | [`llm`](../packages/llm/llm) | [`llm-deepseek`](../packages/llm/llm-deepseek), [`llm-pi-ai`](../packages/llm/llm-pi-ai), [`llm-replay`](../packages/test-support/llm-replay) | [`agent-loop`](../packages/core/agent-loop), [`compaction-basic`](../packages/compaction/compaction-basic) | - | Adapters register provider implementations; the loop and compaction call the provider-neutral stream service. |
+| `ctx.knowledge` | `core` | `knowledge` | - | - | - | Runs the two ingest pipelines, search orchestration, variant generation, and the /api/knowledge.* Fetch routes; the browser workbench is its only consumer. |
+| `ctx.knowledgeStore` | `seam` | `knowledge-pgvector` | `knowledge-pgvector` | `knowledge` | - | Bootstraps the database, extension, and schema idempotently, then serves document, chunk, and template-artifact persistence plus cosine KNN with structured filters. |
+| `ctx.knowledgeEmbedding` | `seam` | `knowledge-embedding-openai` | `knowledge-embedding-openai` | `knowledge` | - | Posts batched /embeddings requests to the configured endpoint and enforces the configured dimension on every vector. |
 | `ctx.deepseekLlmApiExtensions` | `seam` | [`deepseek-llm-api-extensions`](../packages/llm/deepseek-llm-api-extensions) | [`session-log-deepseek`](../packages/session/session-log-deepseek), [`plugin-package-inventory-deepseek`](../packages/llm/plugin-package-inventory-deepseek) | [`llm-deepseek`](../packages/llm/llm-deepseek) | - | Plugins prepare independent top-level fields; the official adapter merges them and commits their delivery state after HTTP acceptance. |
 | `ctx.tokenMeter` | `core` | [`token-meter`](../packages/llm/token-meter) | - | [`compaction-basic`](../packages/compaction/compaction-basic) | - | Owns isolated per-session replay folds; pressure consumers share immutable revisioned measurements. |
 | `ctx.toolResultPruner` | `core` | [`compaction-tool-result-pruner`](../packages/compaction/compaction-tool-result-pruner) | - | [`compaction-basic`](../packages/compaction/compaction-basic) | - | Rewrites oversized current tool results through replayable single-node surface replacements before summary compaction. |

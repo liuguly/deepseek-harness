@@ -337,6 +337,9 @@
     { "path": "./packages/lsp/lsp" },
     { "path": "./packages/lsp/lsp-stdio" },
     { "path": "./packages/lsp/tool-lsp" },
+    { "path": "./packages/workbench/knowledge" },
+    { "path": "./packages/workbench/knowledge-pgvector" },
+    { "path": "./packages/workbench/knowledge-embedding-openai" },
     { "path": "./apps/cli" }
   ]
 }

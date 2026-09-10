@@ -3286,6 +3286,130 @@ export interface Config {
 
 Source: [`packages/webhook/webhook-github/src/index.ts:17`](../packages/webhook/webhook-github/src/index.ts)
 
+<a id="deepseek-aidsh-workbench-knowledge"></a>
+
+## `@deepseek-ai/dsh-workbench-knowledge`
+
+Requires: `knowledgeStore` · `knowledgeEmbedding` · `llm` · `connection`
+
+```ts config-catalog
+/** Plugin configuration. */
+export interface Config {
+  /** Storage backend this composition expects. The matching provider row must register `knowledgeStore`. */
+  readonly store: {
+    /** The registered store backend name. */
+    readonly backend: 'pgvector'
+  }
+  /** Embedding provider this composition expects. The matching provider row must register `knowledgeEmbedding`. */
+  readonly embedding: {
+    /** The registered embedding provider name. */
+    readonly provider: 'openai-compatible'
+  }
+  /** The model route every template-pipeline call runs on; there is no deployment-wide default route service. */
+  readonly template: {
+    /** The provider/model route of the template pipeline's model. */
+    readonly llm: {
+      /** Provider route id, e.g. `deepseek-official`. */
+      readonly provider: string
+      /** Model id served by that provider route. */
+      readonly model: string
+    }
+    /** Longest document text fed to one template call, in characters. */
+    readonly maxDocumentChars?: number
+    /** Most questions extracted per document. */
+    readonly maxQuestions?: number
+    /** Question-extraction sliding-window size, in characters. */
+    readonly extractionWindowChars?: number
+    /** Parallel per-question variant-template model calls. */
+    readonly questionTemplateConcurrency?: number
+  }
+  /** Chunk sizing bounds. */
+  readonly chunking?: {
+    /** Sections merge up to this size, in characters. */
+    readonly targetChars?: number
+    /** Hard per-chunk upper bound, in characters. */
+    readonly maxChars?: number
+    /** Characters of the previous split carried into the next chunk. */
+    readonly overlapChars?: number
+  }
+  /** Variant generation defaults and caps. */
+  readonly generation?: {
+    /** Variants generated when a request omits a count. */
+    readonly defaultVariantCount?: number
+    /** Upper bound accepted for one generation request. */
+    readonly maxVariantCount?: number
+  }
+  /** Upload admission bounds. */
+  readonly uploads?: {
+    /** Reserved staging directory name below the harness home. */
+    readonly stagingDir?: string
+    /** Largest accepted upload, in bytes. */
+    readonly maxFileBytes?: number
+  }
+  /** Search result bounds. */
+  readonly search?: {
+    /** Results returned when a request omits `topK`. */
+    readonly defaultTopK?: number
+    /** Upper bound accepted for `topK`. */
+    readonly maxTopK?: number
+  }
+}
+```
+
+Source: [`packages/workbench/knowledge/src/index.ts:88`](../packages/workbench/knowledge/src/index.ts)
+
+<a id="deepseek-aidsh-workbench-knowledge-embedding-openai"></a>
+
+## `@deepseek-ai/dsh-workbench-knowledge-embedding-openai`
+
+```ts config-catalog
+/** Plugin configuration. */
+export interface Config {
+  /** Base URL of the OpenAI-compatible API, e.g. `https://api.siliconflow.cn/v1`. */
+  readonly baseUrl: string
+  /** Embedding model id, e.g. `BAAI/bge-m3`. */
+  readonly model: string
+  /** Dimension of the produced vectors; must equal the store's dimension. */
+  readonly dimensions: number
+  /** Texts per HTTP request. @default 16 */
+  readonly batchSize?: number
+  /** Credential reference, currently `env:<NAME>` — the variable must exist in the harness process environment. */
+  readonly credentialRef: string
+  /** Per-request timeout in milliseconds. @default 60000 */
+  readonly timeoutMs?: number
+}
+```
+
+Source: [`packages/workbench/knowledge-embedding-openai/src/index.ts:20`](../packages/workbench/knowledge-embedding-openai/src/index.ts)
+
+<a id="deepseek-aidsh-workbench-knowledge-pgvector"></a>
+
+## `@deepseek-ai/dsh-workbench-knowledge-pgvector`
+
+```ts config-catalog
+/** Plugin configuration. */
+export interface Config {
+  /** PostgreSQL host. */
+  readonly host: string
+  /** PostgreSQL port. @default 5432 */
+  readonly port?: number
+  /** PostgreSQL role name. */
+  readonly user: string
+  /** PostgreSQL password; injected from the environment via composition expressions. */
+  readonly password: string
+  /** Database hosting the knowledge store; created when absent. */
+  readonly database: string
+  /** Schema hosting the knowledge tables; created when absent. */
+  readonly schema?: string
+  /** Vector dimension the columns and HNSW indexes are built for; must equal the embedding provider's dimension. */
+  readonly dimensions: number
+  /** Maximum pool connections. @default 10 */
+  readonly poolMax?: number
+}
+```
+
+Source: [`packages/workbench/knowledge-pgvector/src/index.ts:19`](../packages/workbench/knowledge-pgvector/src/index.ts)
+
 <a id="deepseek-aidsh-workflow-worker-thread"></a>
 
 ## `@deepseek-ai/dsh-workflow-worker-thread`
@@ -3363,6 +3487,7 @@ These load from a `cordis.yml` entry with no `config:` block; they declare no co
 - `@deepseek-ai/dsh-client-ui-tool` ([`packages/client/ui-tool/src/index.ts`](../packages/client/ui-tool/src/index.ts))
 - `@deepseek-ai/dsh-client-ui-trajectory` ([`packages/client/ui-trajectory/src/index.ts`](../packages/client/ui-trajectory/src/index.ts))
 - `@deepseek-ai/dsh-client-ui-user-questions` ([`packages/client/ui-user-questions/src/index.ts`](../packages/client/ui-user-questions/src/index.ts))
+- `@deepseek-ai/dsh-client-ui-workbench` ([`packages/client/ui-workbench/src/index.ts`](../packages/client/ui-workbench/src/index.ts))
 - `@deepseek-ai/dsh-client-ui-workflow-run` ([`packages/client/ui-workflow-run/src/index.ts`](../packages/client/ui-workflow-run/src/index.ts))
 - `@deepseek-ai/dsh-client-ui-workspace` ([`packages/client/ui-workspace/src/index.ts`](../packages/client/ui-workspace/src/index.ts))
 - `@deepseek-ai/dsh-command-compact` — requires `commands` · `compaction` ([`packages/compaction/command-compact/src/index.ts`](../packages/compaction/command-compact/src/index.ts))

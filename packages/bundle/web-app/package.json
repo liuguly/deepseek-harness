@@ -84,6 +84,7 @@
     "@deepseek-ai/dsh-client-ui-tool": "workspace:^",
     "@deepseek-ai/dsh-client-ui-workflow-run": "workspace:^",
     "@deepseek-ai/dsh-client-ui-trajectory": "workspace:^",
+    "@deepseek-ai/dsh-client-ui-workbench": "workspace:^",
     "@deepseek-ai/dsh-client-ui-workspace": "workspace:^",
     "@deepseek-ai/dsh-cmdline": "workspace:^",
     "@deepseek-ai/dsh-code-runtime-worker-thread": "workspace:^",
@@ -109,6 +110,9 @@
     "@deepseek-ai/dsh-api-workspace-controller": "workspace:^",
     "@deepseek-ai/dsh-subprocess": "workspace:^",
     "@deepseek-ai/dsh-workspace": "workspace:^",
+    "@deepseek-ai/dsh-workbench-knowledge": "workspace:^",
+    "@deepseek-ai/dsh-workbench-knowledge-pgvector": "workspace:^",
+    "@deepseek-ai/dsh-workbench-knowledge-embedding-openai": "workspace:^",
     "@deepseek-ai/schemastery": "workspace:^",
     "commander": "^15.0.0",
     "open": "^11.0.0"

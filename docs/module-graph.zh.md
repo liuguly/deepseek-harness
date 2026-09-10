@@ -175,6 +175,7 @@ flowchart TD
     pkg_client_ui_tool["client-ui-tool"]
     pkg_client_ui_trajectory["client-ui-trajectory"]
     pkg_client_ui_user_questions["client-ui-user-questions"]
+    pkg_client_ui_workbench["client-ui-workbench"]
     pkg_client_ui_workflow_run["client-ui-workflow-run"]
     pkg_client_ui_workspace["client-ui-workspace"]
     pkg_client_web["client-web"]
@@ -355,6 +356,11 @@ flowchart TD
     pkg_webhook["webhook"]
     pkg_webhook_github["webhook-github"]
   end
+  subgraph group_workbench["packages/workbench"]
+    pkg_workbench_knowledge["workbench-knowledge"]
+    pkg_workbench_knowledge_embedding_openai["workbench-knowledge-embedding-openai"]
+    pkg_workbench_knowledge_pgvector["workbench-knowledge-pgvector"]
+  end
   subgraph group_workflow["packages/workflow"]
     pkg_tool_ralph["tool-ralph"]
     pkg_tool_workflow["tool-workflow"]
@@ -394,6 +400,7 @@ flowchart TD
   pkg_storage_sqlite --> pkg_storage
   pkg_subprocess --> pkg_http_proxy
   pkg_typert_loader --> pkg_typert_registry
+  pkg_workbench_knowledge --> pkg_llm
   pkg_session --> pkg_scope
   pkg_system_prompt --> pkg_invariants
   pkg_system_prompt --> pkg_llm
@@ -423,6 +430,8 @@ flowchart TD
   pkg_subprocess_e2b --> pkg_timeout
   pkg_subprocess_local --> pkg_subprocess
   pkg_subprocess_local --> pkg_timeout
+  pkg_workbench_knowledge_embedding_openai --> pkg_workbench_knowledge
+  pkg_workbench_knowledge_pgvector --> pkg_workbench_knowledge
   pkg_skill_badge --> pkg_skill
   pkg_spill --> pkg_brand
   pkg_spill --> pkg_llm
@@ -1218,6 +1227,7 @@ flowchart TD
 | [`client-ui-tool`](../packages/client/ui-tool) | `client` | — |
 | [`client-ui-trajectory`](../packages/client/ui-trajectory) | `client` | — |
 | [`client-ui-user-questions`](../packages/client/ui-user-questions) | `client` | — |
+| [`client-ui-workbench`](../packages/client/ui-workbench) | `client` | — |
 | [`client-ui-workflow-run`](../packages/client/ui-workflow-run) | `client` | — |
 | [`client-ui-workspace`](../packages/client/ui-workspace) | `client` | — |
 | [`client-web`](../packages/client/web) | `client` | — |
@@ -1259,6 +1269,7 @@ flowchart TD
 | [`storage-sqlite`](../packages/storage/storage-sqlite) | `storage` | [`storage`](../packages/storage/storage) |
 | [`subprocess`](../packages/subprocess/subprocess) | `subprocess` | [`http-proxy`](../packages/util/http-proxy) |
 | [`typert-loader`](../packages/typert/loader) | `typert` | [`typert-registry`](../packages/typert/registry) |
+| [`workbench-knowledge`](../packages/workbench/knowledge) | `workbench` | [`llm`](../packages/llm/llm) |
 | [`session`](../packages/core/session) | `core` | [`scope`](../packages/core/scope) |
 | [`system-prompt`](../packages/core/system-prompt) | `core` | [`invariants`](../packages/runtime-diagnostics/invariants), [`llm`](../packages/llm/llm), [`scope`](../packages/core/scope) |
 | [`skill`](../packages/skill/skill) | `skill` | [`llm`](../packages/llm/llm), [`scope`](../packages/core/scope) |
@@ -1272,6 +1283,8 @@ flowchart TD
 | [`credentials-local`](../packages/credentials/credentials-local) | `credentials` | [`atomic-write`](../packages/util/atomic-write), [`credentials`](../packages/credentials/credentials), [`home-paths`](../packages/util/home-paths), [`launch-environment`](../packages/util/launch-environment) |
 | [`subprocess-e2b`](../packages/e2b/subprocess-e2b) | `e2b` | [`e2b`](../packages/e2b/e2b), [`subprocess`](../packages/subprocess/subprocess), [`timeout`](../packages/util/timeout) |
 | [`subprocess-local`](../packages/subprocess/subprocess-local) | `subprocess` | [`subprocess`](../packages/subprocess/subprocess), [`timeout`](../packages/util/timeout) |
+| [`workbench-knowledge-embedding-openai`](../packages/workbench/knowledge-embedding-openai) | `workbench` | [`workbench-knowledge`](../packages/workbench/knowledge) |
+| [`workbench-knowledge-pgvector`](../packages/workbench/knowledge-pgvector) | `workbench` | [`workbench-knowledge`](../packages/workbench/knowledge) |
 | [`skill-badge`](../packages/skill/skill-badge) | `skill` | [`skill`](../packages/skill/skill) |
 | [`spill`](../packages/spill/spill) | `spill` | [`brand`](../packages/util/brand), [`llm`](../packages/llm/llm), [`session`](../packages/core/session) |
 | [`app-boot`](../packages/boot/app-boot) | `boot` | [`home-paths`](../packages/util/home-paths), [`launch-environment`](../packages/util/launch-environment), [`system-prompt`](../packages/core/system-prompt) |

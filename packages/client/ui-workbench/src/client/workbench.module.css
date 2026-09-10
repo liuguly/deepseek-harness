@@ -1,0 +1,462 @@
+/* Every color resolves through a `--dsw-alias-*` token; spacing stays on the
+ * shared scale. Layout collapses to stacked panes on narrow viewports. */
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  color: var(--dsw-alias-label-primary);
+}
+
+.title {
+  margin: 0;
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: 500;
+}
+
+.intro {
+  margin: 0;
+  font-size: 13px;
+  line-height: 20px;
+  color: var(--dsw-alias-label-tertiary);
+}
+
+.uploadBar {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.dropzone {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px;
+  border: 1px dashed var(--dsw-alias-border-l4);
+  border-radius: 12px;
+  cursor: pointer;
+}
+
+.dropzoneActive {
+  border-color: var(--dsw-alias-label-secondary);
+}
+
+.fileInput {
+  display: none;
+}
+
+.modeRow {
+  display: flex;
+  gap: 16px;
+}
+
+.modeOption {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+}
+
+.queue {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.queueItem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 12px;
+}
+
+.queueName {
+  font-weight: 500;
+}
+
+.progress {
+  width: 120px;
+}
+
+.stateOk {
+  color: var(--dsw-alias-state-success-primary);
+}
+
+.stateFailed {
+  color: var(--dsw-alias-state-warn-label);
+}
+
+.columns {
+  display: grid;
+  grid-template-columns: minmax(240px, 1fr) minmax(320px, 2fr);
+  gap: 16px;
+}
+
+@media (max-width: 960px) {
+  .columns {
+    grid-template-columns: 1fr;
+  }
+}
+
+.library,
+.searchPane {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+}
+
+.paneHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.paneTitle {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.filterRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+
+.filterLabel {
+  font-size: 12px;
+  color: var(--dsw-alias-label-tertiary);
+}
+
+.chip {
+  border: 0.5px solid var(--dsw-alias-border-l4);
+  border-radius: 999px;
+  corner-shape: round;
+  padding: 2px 10px;
+  font-size: 12px;
+  background: transparent;
+  color: var(--dsw-alias-label-primary);
+  cursor: pointer;
+}
+
+.chipActive {
+  background: var(--dsw-alias-label-primary);
+  color: var(--dsw-alias-label-invert, var(--dsw-alias-label-primary));
+}
+
+.primaryButton {
+  border: none;
+  border-radius: 8px;
+  padding: 4px 12px;
+  font-size: 13px;
+  cursor: pointer;
+  background: var(--dsw-alias-label-primary);
+  color: var(--dsw-alias-label-invert, var(--dsw-alias-label-primary));
+}
+
+.linkButton {
+  border: none;
+  background: transparent;
+  color: var(--dsw-alias-label-secondary);
+  font-size: 12px;
+  cursor: pointer;
+  padding: 0;
+  text-decoration: underline;
+}
+
+.docList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.docItem {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  border: 0.5px solid var(--dsw-alias-border-l4);
+  border-radius: 10px;
+  padding: 8px 10px;
+}
+
+.docButton {
+  border: none;
+  background: transparent;
+  text-align: start;
+  cursor: pointer;
+  color: inherit;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 0;
+}
+
+.docButtonActive {
+  outline: 0.5px solid var(--dsw-alias-label-secondary);
+}
+
+.docTitle {
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.docMeta {
+  font-size: 12px;
+  color: var(--dsw-alias-label-tertiary);
+}
+
+.docActions {
+  display: flex;
+  gap: 10px;
+}
+
+.confirmRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+}
+
+.searchRow {
+  display: flex;
+  gap: 8px;
+}
+
+.searchInput {
+  flex: 1;
+  border: 0.5px solid var(--dsw-alias-border-l4);
+  border-radius: 8px;
+  padding: 5px 10px;
+  font-size: 13px;
+  color: inherit;
+  background: transparent;
+}
+
+.resultList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.resultCard {
+  border: 0.5px solid var(--dsw-alias-border-l4);
+  border-radius: 10px;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.resultHead {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+}
+
+.score {
+  font-variant-numeric: tabular-nums;
+  color: var(--dsw-alias-label-secondary);
+}
+
+.kindLabel {
+  color: var(--dsw-alias-label-tertiary);
+}
+
+.badge {
+  border: 0.5px solid var(--dsw-alias-border-l4);
+  border-radius: 999px;
+  corner-shape: round;
+  padding: 0 8px;
+}
+
+.docSource {
+  color: var(--dsw-alias-label-tertiary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.resultTitle {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.content {
+  margin: 0;
+  font-size: 12px;
+  line-height: 19px;
+  white-space: pre-wrap;
+}
+
+.metadataRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.tag {
+  font-size: 11px;
+  color: var(--dsw-alias-label-tertiary);
+  border: 0.5px solid var(--dsw-alias-border-l4);
+  border-radius: 6px;
+  padding: 1px 6px;
+}
+
+.variantRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.generator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.generatorField {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+}
+
+.countInput {
+  width: 52px;
+  border: 0.5px solid var(--dsw-alias-border-l4);
+  border-radius: 6px;
+  padding: 2px 6px;
+  font-size: 12px;
+  background: transparent;
+  color: inherit;
+}
+
+.select {
+  border: 0.5px solid var(--dsw-alias-border-l4);
+  border-radius: 6px;
+  font-size: 12px;
+  background: transparent;
+  color: inherit;
+  padding: 2px 6px;
+}
+
+.variantsBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.blockTitle {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.variantItem {
+  font-size: 12px;
+  border-top: 0.5px solid var(--dsw-alias-border-l4);
+  padding-top: 4px;
+}
+
+.payload {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 12px;
+}
+
+.payload dt {
+  font-weight: 500;
+}
+
+.payload dd {
+  margin: 0 0 0 12px;
+  white-space: pre-wrap;
+  color: var(--dsw-alias-label-secondary);
+}
+
+.hint {
+  margin: 0;
+  font-size: 12px;
+  color: var(--dsw-alias-label-tertiary);
+}
+
+.errorText {
+  margin: 0;
+  font-size: 12px;
+  color: var(--dsw-alias-state-warn-label);
+}
+
+/* The overlay layer itself stays click-through (the shell's rule); only the
+ * backdrop and the panel opt back into pointer events. The backdrop carries
+ * no fill — the panel is the focus, and the page stays visible behind it. */
+
+.sidebarAction {
+  border: none;
+  background: transparent;
+  color: var(--dsw-alias-label-secondary);
+  font-size: 13px;
+  cursor: pointer;
+  padding: 4px 8px;
+  text-align: start;
+}
+
+.overlayLayer {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  pointer-events: none;
+}
+
+.overlayBackdrop {
+  position: absolute;
+  inset: 0;
+  pointer-events: auto;
+  background: transparent;
+}
+
+.overlayPanel {
+  position: absolute;
+  inset: 4vh 4vw;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 18px 20px;
+  border: 0.5px solid var(--dsw-alias-border-l4);
+  border-radius: 16px;
+  background: var(--dsw-alias-surface-canvas, canvas);
+  color: var(--dsw-alias-label-primary);
+  pointer-events: auto;
+  overflow: hidden;
+}
+
+.overlayHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.overlayBody {
+  flex: 1;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
